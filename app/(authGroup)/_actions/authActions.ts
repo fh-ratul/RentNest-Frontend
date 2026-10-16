@@ -18,6 +18,34 @@ const ROLE_DASHBOARD: Record<string, string> = {
   ADMIN: "/dashboard/admin",
 };
 
+const setAuthCookies = async (tokens: { accessToken: string; refreshToken: string }) => {
+  const cookieStore = await cookies();
+  const isProduction = process.env.NODE_ENV === "production";
+
+  cookieStore.set("accessToken", tokens.accessToken, {
+    httpOnly: true,
+    secure: isProduction,
+    maxAge: 60 * 60 * 24,
+    sameSite: "lax",
+  });
+  cookieStore.set("refreshToken", tokens.refreshToken, {
+    httpOnly: true,
+    secure: isProduction,
+    maxAge: 60 * 60 * 24 * 7,
+    sameSite: "lax",
+  });
+};
+
+// redirect() works by throwing, so callers must not wrap this in try/catch.
+const redirectAfterLogin = (accessToken: string, redirectTo: string) => {
+  const decodedToken = jwt.decode(accessToken) as JwtPayload;
+
+  if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+    redirect(redirectTo);
+  }
+  redirect(ROLE_DASHBOARD[decodedToken.role as string] || "/");
+};
+
 export const loginAction = async (
   redirectTo: string,
   prevState: ActionState,
@@ -37,28 +65,35 @@ export const loginAction = async (
   const result = await res.json();
 
   if (result.success) {
-    const cookieStore = await cookies();
-    const isProduction = process.env.NODE_ENV === "production";
+    await setAuthCookies(result.data);
+    redirectAfterLogin(result.data.accessToken, redirectTo);
+  }
 
-    cookieStore.set("accessToken", result.data.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      maxAge: 60 * 60 * 24,
-      sameSite: "lax",
-    });
-    cookieStore.set("refreshToken", result.data.refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      maxAge: 60 * 60 * 24 * 7,
-      sameSite: "lax",
-    });
+  return { success: false, message: result.message };
+};
 
-    const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload;
+// `idToken` is the credential Google Sign-In hands to the browser. `role` is
+// only sent from the register page: the backend needs it to create a new account.
+export const googleLoginAction = async (
+  idToken: string,
+  role: "TENANT" | "LANDLORD" | undefined,
+  redirectTo: string
+): Promise<ActionState> => {
+  if (typeof idToken !== "string" || !idToken) {
+    return { success: false, message: "Google did not return a sign-in token. Please try again." };
+  }
 
-    if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
-      redirect(redirectTo);
-    }
-    redirect(ROLE_DASHBOARD[decodedToken.role as string] || "/");
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken, role }),
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    await setAuthCookies(result.data);
+    redirectAfterLogin(result.data.accessToken, redirectTo);
   }
 
   return { success: false, message: result.message };
