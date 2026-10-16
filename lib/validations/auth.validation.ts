@@ -11,3 +11,8 @@ export const loginFormSchema = z.object({
   email: z.string().email("Enter a valid email address"),
   password: z.string().min(1, "Password is required"),
 });
+
+export const verifyEmailFormSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+  otp: z.string().regex(/^\d{6}$/, "Enter the 6 digit code from your email"),
+});

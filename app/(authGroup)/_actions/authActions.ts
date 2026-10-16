@@ -4,7 +4,11 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { validateFormData } from "@/lib/validate-form-data";
-import { registerFormSchema, loginFormSchema } from "@/lib/validations/auth.validation";
+import {
+  registerFormSchema,
+  loginFormSchema,
+  verifyEmailFormSchema,
+} from "@/lib/validations/auth.validation";
 
 export type ActionState = {
   success: boolean;
@@ -69,6 +73,11 @@ export const loginAction = async (
     redirectAfterLogin(result.data.accessToken, redirectTo);
   }
 
+  // The backend has just sent this account a new OTP.
+  if (result.code === "EMAIL_NOT_VERIFIED") {
+    redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
+  }
+
   return { success: false, message: result.message };
 };
 
@@ -117,8 +126,46 @@ export const registerAction = async (
   const result = await res.json();
 
   if (result.success) {
-    redirect("/login?registered=1");
+    redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
   }
 
   return { success: false, message: result.message };
+};
+
+export const verifyEmailAction = async (
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> => {
+  const parsed = validateFormData(verifyEmailFormSchema, formData);
+  if (!parsed.success) {
+    return { success: false, message: parsed.firstError, fieldErrors: parsed.fieldErrors };
+  }
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/verify-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(parsed.data),
+  });
+
+  const result = await res.json();
+
+  // Verifying also logs the user in.
+  if (result.success) {
+    await setAuthCookies(result.data);
+    redirectAfterLogin(result.data.accessToken, "");
+  }
+
+  return { success: false, message: result.message };
+};
+
+export const resendOtpAction = async (email: string): Promise<ActionState> => {
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/resend-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const result = await res.json();
+
+  return { success: Boolean(result.success), message: result.message };
 };

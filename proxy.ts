@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { getNewAccessToken } from "./service/refreshToken";
 import { jwtUtils } from "./utils/jwt";
 
-const AUTH_ROUTES = ["/login", "/register"];
+const AUTH_ROUTES = ["/login", "/register", "/verify-email"];
 const PUBLIC_ROUTES = ["/", "/properties"];
 
 const ROLE_DASHBOARD: Record<string, string> = {
