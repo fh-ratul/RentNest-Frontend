@@ -91,14 +91,14 @@ const loginWithCredentials = async (
   return { success: false, message: result.message };
 };
 
-// Signs in with one of the demo accounts configured in the server env.
+// Signs in with one of the seeded demo accounts. The button only sends the role;
+// the credentials are looked up here on the server.
 export const demoLoginAction = async (role: DemoRole, redirectTo: string): Promise<ActionState> => {
-  const credentials = DEMO_ROLES.includes(role) ? getDemoCredentials(role) : null;
-  if (!credentials) {
-    return { success: false, message: `The ${role.toLowerCase()} demo account is not configured on this deployment.` };
+  if (!DEMO_ROLES.includes(role)) {
+    return { success: false, message: "Unknown demo role." };
   }
 
-  return loginWithCredentials(credentials, redirectTo);
+  return loginWithCredentials(getDemoCredentials(role), redirectTo);
 };
 
 // `idToken` is the credential Google Sign-In hands to the browser. `role` is
