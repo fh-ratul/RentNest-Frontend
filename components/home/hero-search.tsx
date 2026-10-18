@@ -5,15 +5,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Search, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { formatBDT } from "@/lib/utils";
 
-// Radix Select can't use "" as a value, so "any" stands for no limit.
+// Monthly rent caps in taka. Radix Select can't use "" as a value, so "any"
+// stands for no limit.
 const BUDGETS = [
   { value: "any", label: "Any budget" },
-  { value: "1000", label: "Up to $1,000" },
-  { value: "2500", label: "Up to $2,500" },
-  { value: "5000", label: "Up to $5,000" },
-  { value: "10000", label: "Up to $10,000" },
-  { value: "50000", label: "Up to $50,000" },
+  ...[15000, 25000, 40000, 60000, 100000, 200000].map((amount) => ({
+    value: String(amount),
+    label: `Up to ${formatBDT(amount)}`,
+  })),
 ];
 
 const QUICK_CITIES = ["Dhaka", "Chattogram", "Sylhet"];
