@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useTheme } from "@/components/theme/theme-provider";
 import { googleLoginAction } from "../_actions/authActions";
 
 // The slice of Google Identity Services this component uses.
@@ -52,6 +53,7 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [isScriptReady, setScriptReady] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { resolvedTheme } = useTheme();
 
   // Google keeps the callback from the first initialize, so it reads the
   // role picked most recently through a ref.
@@ -91,7 +93,7 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
       ux_mode: "popup",
     });
     window.google.accounts.id.renderButton(container, {
-      theme: "outline",
+      theme: resolvedTheme === "dark" ? "filled_black" : "outline",
       size: "large",
       text,
       shape: "rectangular",
@@ -99,7 +101,7 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
       // The rest of the page is in English; without this Google follows the browser.
       locale: "en",
     });
-  }, [handleCredential, isScriptReady, text]);
+  }, [handleCredential, isScriptReady, text, resolvedTheme]);
 
   if (!CLIENT_ID) {
     return null;
@@ -107,19 +109,19 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3 text-xs uppercase text-gray-500">
-        <span className="h-px flex-1 bg-gray-200" />
+      <div className="flex items-center gap-3 text-xs uppercase text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
         or
-        <span className="h-px flex-1 bg-gray-200" />
+        <span className="h-px flex-1 bg-border" />
       </div>
       <div className="flex min-h-11 flex-col items-center justify-center">
         <Script
-          src="https://accounts.google.com/gsi/client"
+          src="https://accounts.google.com/gsi/client?hl=en"
           strategy="afterInteractive"
           onReady={() => setScriptReady(true)}
         />
         {isPending && (
-          <p className="flex items-center gap-2 text-sm text-gray-500">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" /> Signing in with Google...
           </p>
         )}
@@ -127,7 +129,7 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
         <div ref={buttonRef} className={isPending ? "hidden" : "flex w-full justify-center"} />
       </div>
       {role && (
-        <p className="text-center text-xs text-gray-500">
+        <p className="text-center text-xs text-muted-foreground">
           Signing up with Google creates a {role === "TENANT" ? "tenant" : "landlord"} account. Pick
           your role above first.
         </p>

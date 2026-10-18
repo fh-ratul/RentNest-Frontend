@@ -9,6 +9,7 @@ import {
   loginFormSchema,
   verifyEmailFormSchema,
 } from "@/lib/validations/auth.validation";
+import { DEMO_ROLES, DemoRole, getDemoCredentials } from "@/lib/demo-accounts";
 
 export type ActionState = {
   success: boolean;
@@ -60,10 +61,19 @@ export const loginAction = async (
     return { success: false, message: parsed.firstError, fieldErrors: parsed.fieldErrors };
   }
 
+  return loginWithCredentials(parsed.data, redirectTo);
+};
+
+// Shared by the login form and the demo buttons. Redirects on success,
+// so callers must not wrap it in try/catch.
+const loginWithCredentials = async (
+  credentials: { email: string; password: string },
+  redirectTo: string
+): Promise<ActionState> => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsed.data),
+    body: JSON.stringify(credentials),
   });
 
   const result = await res.json();
@@ -75,10 +85,20 @@ export const loginAction = async (
 
   // The backend has just sent this account a new OTP.
   if (result.code === "EMAIL_NOT_VERIFIED") {
-    redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
+    redirect(`/verify-email?email=${encodeURIComponent(credentials.email)}`);
   }
 
   return { success: false, message: result.message };
+};
+
+// Signs in with one of the demo accounts configured in the server env.
+export const demoLoginAction = async (role: DemoRole, redirectTo: string): Promise<ActionState> => {
+  const credentials = DEMO_ROLES.includes(role) ? getDemoCredentials(role) : null;
+  if (!credentials) {
+    return { success: false, message: `The ${role.toLowerCase()} demo account is not configured on this deployment.` };
+  }
+
+  return loginWithCredentials(credentials, redirectTo);
 };
 
 // `idToken` is the credential Google Sign-In hands to the browser. `role` is

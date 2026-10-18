@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { confirmPayment } from "@/app/payments/_actions/confirmPaymentActions";
+import StatusScreen from "@/components/shared/status-screen";
 
 type Result = { success: boolean; message?: string } | null;
 
@@ -22,32 +23,20 @@ export default function ConfirmPaymentStatus({ sessionId }: { sessionId: string 
 
   if (isPending || !result) {
     return (
-      <div className="mx-auto max-w-md py-24 text-center">
-        <Loader2 className="mx-auto h-12 w-12 animate-spin text-muted-foreground" />
-        <h1 className="mt-4 text-xl font-semibold">Confirming payment...</h1>
-        <p className="text-muted-foreground">This will only take a moment.</p>
-      </div>
+      <StatusScreen icon={Loader2} spin title="Confirming payment..." description="This will only take a moment." />
     );
   }
 
   return (
-    <div className="mx-auto max-w-md py-24 text-center">
-      {result.success ? (
-        <>
-          <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
-          <h1 className="mt-4 text-xl font-semibold">Payment Successful</h1>
-          <p className="text-muted-foreground">Your rental is now active.</p>
-        </>
-      ) : (
-        <>
-          <XCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h1 className="mt-4 text-xl font-semibold">Payment Not Confirmed</h1>
-          <p className="text-muted-foreground">{result.message}</p>
-        </>
-      )}
-      <Button asChild className="mt-6">
-        <Link href="/dashboard/tenant">Back to Dashboard</Link>
+    <StatusScreen
+      icon={result.success ? CheckCircle2 : XCircle}
+      tone={result.success ? "success" : "danger"}
+      title={result.success ? "Payment successful" : "Payment not confirmed"}
+      description={result.success ? "Your rental is now active. Welcome home!" : result.message}
+    >
+      <Button asChild size="lg">
+        <Link href="/dashboard/tenant">Back to dashboard</Link>
       </Button>
-    </div>
+    </StatusScreen>
   );
 }

@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader, Panel } from "@/components/dashboard/page-header";
 import PropertyForm from "@/components/dashboard/landlord/property-form";
 import { getCategories } from "@/app/properties/_actions/propertyActions";
 import { ICategory } from "@/lib/types";
@@ -8,16 +8,11 @@ export default async function NewPropertyPage() {
   const categories: ICategory[] = categoriesResult.success ? categoriesResult.data : [];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">List a New Property</h1>
-        <p className="text-muted-foreground">Fill in the details below to create a listing.</p>
-      </div>
-      <Card>
-        <CardContent className="p-6">
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader title="List a new property" description={"Fill in the details below to create a listing."} />
+      <Panel className="p-5 sm:p-8">
           <PropertyForm categories={categories} />
-        </CardContent>
-      </Card>
+      </Panel>
     </div>
   );
 }

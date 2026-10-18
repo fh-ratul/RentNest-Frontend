@@ -5,8 +5,8 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { IProperty } from "@/lib/types";
 import PropertyImage from "@/components/shared/property-image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/shared/status-badge";
+import { PROPERTY_STATUS_TONE } from "@/lib/tones";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -19,14 +19,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2 } from "lucide-react";
+import { Bath, Bed, MapPin, Pencil, Trash2 } from "lucide-react";
 import { deletePropertyAction } from "@/app/(dashboardGroup)/dashboard/landlord/_actions/propertyActions";
-
-const STATUS_STYLES: Record<string, string> = {
-  AVAILABLE: "bg-green-100 text-green-800 hover:bg-green-100",
-  RENTED: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-  INACTIVE: "bg-gray-100 text-gray-800 hover:bg-gray-100",
-};
 
 export default function PropertyListCard({ property }: { property: IProperty }) {
   const [isPending, startTransition] = useTransition();
@@ -45,28 +39,48 @@ export default function PropertyListCard({ property }: { property: IProperty }) 
   };
 
   return (
-    <Card className="overflow-hidden py-0">
-      <div className="relative h-40 w-full bg-muted">
-        <PropertyImage src={property.images?.[0]} alt={property.title} />
-        <Badge className={`absolute right-3 top-3 ${STATUS_STYLES[property.status]}`}>
-          {property.status}
-        </Badge>
+    <article className="group h-full overflow-hidden rounded-2xl border bg-card shadow-soft transition-all duration-500 ease-(--ease-out-expo) hover:-translate-y-1 hover:shadow-lift">
+      <div className="relative aspect-16/10 w-full overflow-hidden bg-muted">
+        <PropertyImage
+          src={property.images?.[0]}
+          alt={property.title}
+          className="transition-transform duration-700 ease-(--ease-out-expo) group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+        <StatusBadge
+          status={property.status}
+          tone={PROPERTY_STATUS_TONE[property.status]}
+          className="absolute right-3 top-3 border-white/20 bg-white/90 backdrop-blur-md dark:bg-black/60"
+        />
+        <p className="absolute bottom-3 left-3 rounded-xl bg-black/55 px-2.5 py-1 font-heading text-sm font-medium text-white backdrop-blur-md">
+          ${Number(property.price).toLocaleString("en-US")}
+          <span className="font-sans text-xs font-normal text-white/75"> /mo</span>
+        </p>
       </div>
-      <CardContent className="space-y-3 p-4">
-        <div>
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="space-y-1">
           <h3 className="line-clamp-1 font-semibold">{property.title}</h3>
-          <p className="text-sm text-muted-foreground">{property.city} · ${property.price}/mo</p>
+          <p className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1"><MapPin className="size-3.5" /> {property.city}</span>
+            <span className="flex items-center gap-1"><Bed className="size-3.5" /> {property.bedrooms}</span>
+            <span className="flex items-center gap-1"><Bath className="size-3.5" /> {property.bathrooms}</span>
+          </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href={`/dashboard/landlord/properties/${property.id}/edit`}>
-              <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
+              <Pencil className="size-3.5" /> Edit
             </Link>
           </Button>
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-600">
-                <Trash2 className="h-3.5 w-3.5" />
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label={`Delete ${property.title}`}
+                className="text-destructive hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="size-3.5" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -78,14 +92,14 @@ export default function PropertyListCard({ property }: { property: IProperty }) 
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} disabled={isPending} className="bg-red-600 hover:bg-red-700">
+                <AlertDialogAction onClick={handleDelete} disabled={isPending} variant="destructive">
                   {isPending ? "Deleting..." : "Delete"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }

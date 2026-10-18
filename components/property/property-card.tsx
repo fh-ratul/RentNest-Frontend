@@ -1,49 +1,61 @@
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { IProperty } from "@/lib/types";
 import PropertyImage from "@/components/shared/property-image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Bed, Bath, MapPin } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
-export default function PropertyCard({ property }: { property: IProperty }) {
+export default function PropertyCard({ property, priority }: { property: IProperty; priority?: boolean }) {
+  const price = Number(property.price).toLocaleString("en-US");
+
   return (
-    <Link href={`/properties/${property.id}`} className="group block">
-      <Card className="overflow-hidden py-0 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
-        <div className="relative h-48 w-full bg-muted">
-          <PropertyImage src={property.images?.[0]} alt={property.title} />
-          <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
-            <Badge className="bg-black/80 text-white hover:bg-black/80">
-              ${property.price}
-              <span className="font-normal opacity-80">/mo</span>
-            </Badge>
-            {property.category && (
-              <Badge variant="secondary" className="bg-white/90 text-foreground">
-                {property.category.name}
-              </Badge>
-            )}
-          </div>
+    <Link
+      href={`/properties/${property.id}`}
+      className="group block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+    >
+      <article>
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-muted">
+          <ViewTransition name={`property-image-${property.id}`} share="morph" default="none">
+            <div className="absolute inset-0">
+              <PropertyImage
+                src={property.images?.[0]}
+                alt={property.title}
+                priority={priority}
+                className="transition-transform duration-[1200ms] ease-(--ease-out-expo) group-hover:scale-[1.04]"
+              />
+            </div>
+          </ViewTransition>
+          <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+
+          {property.category && (
+            <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[oklch(0.25_0.04_258)] shadow-sm">
+              {property.category.name}
+            </span>
+          )}
+          <span className="absolute right-3 top-3 flex size-9 translate-y-1 items-center justify-center rounded-full bg-white/95 text-[oklch(0.25_0.04_258)] opacity-0 shadow-sm transition-all duration-500 ease-(--ease-out-expo) group-hover:translate-y-0 group-hover:opacity-100">
+            <ArrowUpRight className="size-4" />
+          </span>
         </div>
-        <CardContent className="space-y-3 p-4">
-          <div>
-            <h3 className="line-clamp-1 font-semibold transition-colors group-hover:text-primary">
+
+        <div className="pt-4">
+          <p className="eyebrow text-[0.65rem]! text-muted-foreground!">{property.city}</p>
+          <div className="mt-1.5 flex items-start justify-between gap-4">
+            <h3 className="line-clamp-1 text-xl font-medium decoration-brass decoration-1 underline-offset-[6px] group-hover:underline">
               {property.title}
             </h3>
-            <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
-              {property.city}
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3 text-sm">
+            <p className="text-muted-foreground">
+              {property.bedrooms} {property.bedrooms === 1 ? "bed" : "beds"}
+              <span className="mx-2 text-border">|</span>
+              {property.bathrooms} {property.bathrooms === 1 ? "bath" : "baths"}
+            </p>
+            <p className="whitespace-nowrap">
+              <span className="font-semibold tabular-nums">${price}</span>
+              <span className="text-muted-foreground"> / month</span>
             </p>
           </div>
-
-          <div className="flex items-center gap-4 border-t pt-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Bed className="h-4 w-4" /> {property.bedrooms}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Bath className="h-4 w-4" /> {property.bathrooms}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </article>
     </Link>
   );
 }

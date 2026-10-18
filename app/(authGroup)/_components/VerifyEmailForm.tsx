@@ -58,9 +58,9 @@ const VerifyEmailForm = ({ email: initialEmail }: { email: string }) => {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={cn(state?.fieldErrors?.email && "border-red-500 focus-visible:ring-red-500")}
+            className={cn("h-11", state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/30")}
           />
-          {state?.fieldErrors?.email && <p className="text-xs text-red-500">{state.fieldErrors.email}</p>}
+          {state?.fieldErrors?.email && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.email}</p>}
         </div>
       )}
       <div className="space-y-1.5">
@@ -74,16 +74,16 @@ const VerifyEmailForm = ({ email: initialEmail }: { email: string }) => {
           placeholder="123456"
           autoFocus
           className={cn(
-            "text-center text-lg tracking-[0.5em]",
-            state?.fieldErrors?.otp && "border-red-500 focus-visible:ring-red-500"
+            "h-14 text-center font-heading text-2xl font-semibold tracking-[0.5em]",
+            state?.fieldErrors?.otp && "border-destructive focus-visible:ring-destructive/30"
           )}
         />
-        {state?.fieldErrors?.otp && <p className="text-xs text-red-500">{state.fieldErrors.otp}</p>}
-        <p className="text-xs text-gray-500">
+        {state?.fieldErrors?.otp && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.otp}</p>}
+        <p className="text-xs text-muted-foreground">
           {secondsLeft > 0 ? `The code expires in ${secondsLeft}s` : "The code has expired. Request a new one."}
         </p>
       </div>
-      <Button type="submit" disabled={pending} className="w-full">
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? "Verifying..." : "Verify email"}
       </Button>
       <Button

@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import StatusScreen from "@/components/shared/status-screen";
 
 export default function PaymentCancelPage() {
   return (
-    <div className="mx-auto max-w-md py-24 text-center">
-      <XCircle className="mx-auto h-12 w-12 text-muted-foreground" />
-      <h1 className="mt-4 text-xl font-semibold">Payment Cancelled</h1>
-      <p className="text-muted-foreground">You can try again anytime from your dashboard.</p>
-      <Button asChild className="mt-6">
-        <Link href="/dashboard/tenant">Back to Dashboard</Link>
+    <StatusScreen
+      icon={XCircle}
+      tone="neutral"
+      title="Payment cancelled"
+      description="No charge was made. You can try again anytime from your dashboard."
+    >
+      <Button asChild size="lg">
+        <Link href="/dashboard/tenant">Back to dashboard</Link>
       </Button>
-    </div>
+    </StatusScreen>
   );
 }

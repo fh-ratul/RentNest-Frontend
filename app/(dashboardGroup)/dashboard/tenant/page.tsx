@@ -5,6 +5,7 @@ import RentalRequestsPanel from "@/components/dashboard/rental-requests-panel";
 import PaymentHistoryTable from "./_components/PaymentHistoryTable";
 import StatCard from "@/components/shared/stat-card";
 import EmptyState from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { IPayment, IRentalRequest } from "@/lib/types";
 import { Clock, CheckCircle2, Home, Wallet, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,22 +31,33 @@ export default async function TenantDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Welcome back, {firstName} 👋</h1>
-          <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your rentals.</p>
-        </div>
-      </div>
+      <PageHeader
+        title={<>Welcome back, {firstName} <span className="inline-block origin-[70%_70%] animate-[wave_2.4s_ease-in-out_1]">👋</span></>}
+        description="Here's what's happening with your rentals."
+        actions={
+          <Button asChild variant="outline" className="group">
+            <Link href="/properties">
+              <Compass className="size-4" /> Find a home
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard icon={Clock} label="Pending" value={pending} colorClass="text-amber-600 bg-amber-50" />
-        <StatCard icon={Home} label="Active Rentals" value={active} colorClass="text-green-600 bg-green-50" />
-        <StatCard icon={CheckCircle2} label="Completed" value={completed} colorClass="text-gray-600 bg-gray-100" />
-        <StatCard icon={Wallet} label="Total Paid" value={`$${totalPaid.toFixed(2)}`} colorClass="text-blue-600 bg-blue-50" />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard index={0} icon={Clock} label="Pending" value={pending} tone="warning" />
+        <StatCard index={1} icon={Home} label="Active rentals" value={active} tone="success" />
+        <StatCard index={2} icon={CheckCircle2} label="Completed" value={completed} tone="neutral" />
+        <StatCard
+          index={3}
+          icon={Wallet}
+          label="Total paid"
+          value={`$${totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          tone="info"
+        />
       </div>
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold">My Rental Requests</h2>
+        <h2 className="mb-4 text-xl font-semibold">My rental requests</h2>
         {rentals.length === 0 ? (
           <EmptyState
             icon={Home}
@@ -60,7 +72,7 @@ export default async function TenantDashboardPage() {
       </div>
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold">Payment History</h2>
+        <h2 className="mb-4 text-xl font-semibold">Payment history</h2>
         <PaymentHistoryTable payments={payments} />
       </div>
     </div>

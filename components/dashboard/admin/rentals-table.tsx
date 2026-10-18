@@ -2,18 +2,12 @@
 
 import { IAdminRentalRequest } from "@/lib/types";
 import StatusBadge from "@/components/shared/status-badge";
-import { Badge } from "@/components/ui/badge";
+import { PAYMENT_STATUS_TONE } from "@/lib/tones";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TablePagination } from "@/components/shared/table-pagination";
 import { useClientTable } from "@/hooks/use-client-table";
 import { Search } from "lucide-react";
-
-const PAYMENT_STYLES: Record<string, string> = {
-  COMPLETED: "bg-green-100 text-green-800 hover:bg-green-100",
-  PENDING: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  FAILED: "bg-red-100 text-red-800 hover:bg-red-100",
-};
 
 export default function AdminRentalsTable({ rentals }: { rentals: IAdminRentalRequest[] }) {
   const { search, setSearch, page, setPage, totalPages, paged } = useClientTable(
@@ -23,10 +17,10 @@ export default function AdminRentalsTable({ rentals }: { rentals: IAdminRentalRe
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 border-b p-4">
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tenant or property..." className="pl-9" />
+      <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:w-72">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tenant or property..." className="h-10 pl-10" />
         </div>
         <p className="text-sm text-muted-foreground">{rentals.length} total requests</p>
       </div>
@@ -52,7 +46,7 @@ export default function AdminRentalsTable({ rentals }: { rentals: IAdminRentalRe
               <TableCell>{new Date(r.moveInDate).toLocaleDateString()}</TableCell>
               <TableCell><StatusBadge status={r.status} /></TableCell>
               <TableCell>
-                {r.payment ? <Badge className={PAYMENT_STYLES[r.payment.status]}>{r.payment.status}</Badge> : <span className="text-xs text-muted-foreground">—</span>}
+                {r.payment ? <StatusBadge status={r.payment.status} tone={PAYMENT_STATUS_TONE[r.payment.status]} /> : <span className="text-xs text-muted-foreground">—</span>}
               </TableCell>
             </TableRow>
           ))}

@@ -1,15 +1,10 @@
 import { IPayment } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import StatusBadge from "@/components/shared/status-badge";
+import { Panel } from "@/components/dashboard/page-header";
+import { PAYMENT_STATUS_TONE } from "@/lib/tones";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import EmptyState from "@/components/shared/empty-state";
 import { Receipt } from "lucide-react";
-
-const PAYMENT_STATUS_STYLES: Record<string, string> = {
-  COMPLETED: "bg-green-100 text-green-800 hover:bg-green-100",
-  PENDING: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  FAILED: "bg-red-100 text-red-800 hover:bg-red-100",
-};
 
 export default function PaymentHistoryTable({ payments }: { payments: IPayment[] }) {
   if (!payments.length) {
@@ -23,7 +18,7 @@ export default function PaymentHistoryTable({ payments }: { payments: IPayment[]
   }
 
   return (
-    <Card className="overflow-hidden py-0">
+    <Panel>
       <Table>
         <TableHeader>
           <TableRow>
@@ -37,15 +32,15 @@ export default function PaymentHistoryTable({ payments }: { payments: IPayment[]
           {payments.map((p) => (
             <TableRow key={p.id}>
               <TableCell className="font-medium">{p.rentalRequest?.property.title ?? "-"}</TableCell>
-              <TableCell>${p.amount}</TableCell>
+              <TableCell className="font-semibold tabular-nums">${Number(p.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</TableCell>
               <TableCell>
-                <Badge className={PAYMENT_STATUS_STYLES[p.status]}>{p.status}</Badge>
+                <StatusBadge status={p.status} tone={PAYMENT_STATUS_TONE[p.status]} />
               </TableCell>
               <TableCell>{p.paidAt ? new Date(p.paidAt).toLocaleDateString() : "-"}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </Card>
+    </Panel>
   );
 }

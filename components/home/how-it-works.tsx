@@ -1,36 +1,34 @@
-import { Search, FileCheck2, KeyRound } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 
 const STEPS = [
   {
-    icon: Search,
-    title: "Browse Listings",
-    description: "Explore verified rental properties filtered by city, price, and amenities.",
+    title: "Find the right home",
+    description: "Browse verified listings and filter by city, budget and property type.",
   },
   {
-    icon: FileCheck2,
-    title: "Request & Get Approved",
-    description: "Submit a rental request and hear back directly from the landlord.",
+    title: "Request and get approved",
+    description: "Pick a move-in date, introduce yourself, and hear back directly from the landlord.",
   },
   {
-    icon: KeyRound,
-    title: "Pay & Move In",
-    description: "Complete secure payment online and get the keys to your new place.",
+    title: "Pay securely and move in",
+    description: "Complete payment online through Stripe once you're approved. No cash, no surprises.",
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <div className="grid gap-8 sm:grid-cols-3">
+    <ol className="grid gap-10 md:grid-cols-3 md:gap-12">
       {STEPS.map((step, i) => (
-        <div key={step.title} className="relative text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <step.icon className="h-6 w-6" />
-          </div>
-          <p className="mt-4 text-xs font-semibold text-muted-foreground">STEP {i + 1}</p>
-          <h3 className="mt-1 font-semibold">{step.title}</h3>
-          <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
-        </div>
+        <li key={step.title}>
+          <Reveal delay={i * 120} className="group border-t border-foreground/15 pt-6">
+            <p className="font-heading text-5xl font-light italic text-brass-ink transition-transform duration-500 ease-(--ease-out-expo) group-hover:translate-x-1">
+              0{i + 1}
+            </p>
+            <h3 className="mt-6 text-2xl font-medium">{step.title}</h3>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{step.description}</p>
+          </Reveal>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }

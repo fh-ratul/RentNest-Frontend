@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import StatCard from "@/components/shared/stat-card";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { getMyProperties } from "./_actions/propertyActions";
 import { getLandlordRequests } from "./_actions/requestActions";
 import { IProperty, ILandlordRentalRequest } from "@/lib/types";
-import { Building2, Clock, Home, Wallet, Plus } from "lucide-react";
+import { ArrowRight, BellRing, Building2, Clock, Home, Plus, Wallet } from "lucide-react";
 
 export default async function LandlordOverviewPage() {
   const [propertiesResult, requestsResult] = await Promise.all([
@@ -23,31 +24,47 @@ export default async function LandlordOverviewPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Landlord Overview</h1>
-          <p className="text-muted-foreground">A snapshot of your listings and requests.</p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/landlord/properties/new">
-            <Plus className="mr-2 h-4 w-4" /> Add Property
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Landlord overview"
+        description="A snapshot of your listings and requests."
+        actions={
+          <Button asChild className="px-4">
+            <Link href="/dashboard/landlord/properties/new">
+              <Plus className="size-4" /> Add property
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard icon={Building2} label="Properties" value={properties.length} colorClass="text-primary bg-primary/10" />
-        <StatCard icon={Clock} label="Pending Requests" value={pendingCount} colorClass="text-amber-600 bg-amber-50" />
-        <StatCard icon={Home} label="Active Leases" value={activeCount} colorClass="text-green-600 bg-green-50" />
-        <StatCard icon={Wallet} label="Total Earnings" value={`$${earnings.toFixed(2)}`} colorClass="text-blue-600 bg-blue-50" />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard index={0} icon={Building2} label="Properties" value={properties.length} tone="brand" />
+        <StatCard index={1} icon={Clock} label="Pending requests" value={pendingCount} tone="warning" />
+        <StatCard index={2} icon={Home} label="Active leases" value={activeCount} tone="success" />
+        <StatCard
+          index={3}
+          icon={Wallet}
+          label="Total earnings"
+          value={`$${earnings.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          tone="info"
+        />
       </div>
 
       {pendingCount > 0 && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-          You have {pendingCount} pending request{pendingCount > 1 ? "s" : ""} awaiting your response.{" "}
-          <Link href="/dashboard/landlord/requests" className="font-medium underline">
-            Review now
-          </Link>
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-warning/30 bg-warning/10 p-5 animate-in fade-in slide-in-from-bottom-2 fill-mode-both delay-300 duration-700">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-warning/20 text-warning">
+              <BellRing className="size-5" />
+            </span>
+            <p className="text-sm">
+              You have <span className="font-semibold">{pendingCount} pending request{pendingCount > 1 ? "s" : ""}</span>{" "}
+              awaiting your response.
+            </p>
+          </div>
+          <Button asChild size="sm" variant="outline" className="group">
+            <Link href="/dashboard/landlord/requests">
+              Review now <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </Button>
         </div>
       )}
     </div>

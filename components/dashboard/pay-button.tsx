@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createPaymentAction } from "@/app/(dashboardGroup)/dashboard/tenant/_actions/paymentActions";
 
@@ -21,8 +22,9 @@ export default function PayButton({ rentalRequestId }: { rentalRequestId: string
   };
 
   return (
-    <Button onClick={handlePay} disabled={loading} className="w-full">
-      {loading ? "Redirecting to checkout..." : "Pay Now"}
+    <Button onClick={handlePay} disabled={loading} size="lg" className="w-full">
+      {loading ? <Loader2 className="size-4 animate-spin" /> : <Lock className="size-4" />}
+      {loading ? "Redirecting to checkout..." : "Pay securely"}
     </Button>
   );
 }

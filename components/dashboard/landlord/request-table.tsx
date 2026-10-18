@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import StatusBadge from "@/components/shared/status-badge";
 import { updateRequestStatus } from "@/app/(dashboardGroup)/dashboard/landlord/_actions/requestActions";
-import { Check, X, CheckCheck } from "lucide-react";
+import EmptyState from "@/components/shared/empty-state";
+import { UserAvatar } from "@/components/shared/user-menu";
+import { Check, X, CheckCheck, Inbox } from "lucide-react";
 
 type Action = { id: string; status: "APPROVED" | "REJECTED" | "COMPLETED" };
 
@@ -32,7 +34,11 @@ export default function RequestTable({ requests }: { requests: ILandlordRentalRe
   };
 
   if (optimisticRequests.length === 0) {
-    return <p className="py-12 text-center text-muted-foreground">No rental requests yet.</p>;
+    return (
+      <div className="p-4">
+        <EmptyState icon={Inbox} title="No rental requests yet" description="Requests from tenants will show up here." />
+      </div>
+    );
   }
 
   return (
@@ -51,8 +57,13 @@ export default function RequestTable({ requests }: { requests: ILandlordRentalRe
           <TableRow key={r.id}>
             <TableCell className="font-medium">{r.property.title}</TableCell>
             <TableCell>
-              <p>{r.tenant.name}</p>
-              <p className="text-xs text-muted-foreground">{r.tenant.email}</p>
+              <div className="flex items-center gap-3">
+                <UserAvatar name={r.tenant.name} className="size-8" />
+                <div>
+                  <p className="font-medium">{r.tenant.name}</p>
+                  <p className="text-xs text-muted-foreground">{r.tenant.email}</p>
+                </div>
+              </div>
             </TableCell>
             <TableCell>{new Date(r.moveInDate).toLocaleDateString()}</TableCell>
             <TableCell><StatusBadge status={r.status} /></TableCell>
@@ -60,22 +71,22 @@ export default function RequestTable({ requests }: { requests: ILandlordRentalRe
               {r.status === "PENDING" && (
                 <div className="flex justify-end gap-2">
                   <Button size="sm" disabled={isPending} onClick={() => handleAction(r.id, "APPROVED")}>
-                    <Check className="mr-1 h-3.5 w-3.5" /> Approve
+                    <Check className="size-3.5" /> Approve
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={isPending}
                     onClick={() => handleAction(r.id, "REJECTED")}
-                    className="text-red-600 hover:text-red-600"
+                    className="text-destructive hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
                   >
-                    <X className="mr-1 h-3.5 w-3.5" /> Reject
+                    <X className="size-3.5" /> Reject
                   </Button>
                 </div>
               )}
               {r.status === "ACTIVE" && (
                 <Button size="sm" variant="outline" disabled={isPending} onClick={() => handleAction(r.id, "COMPLETED")}>
-                  <CheckCheck className="mr-1 h-3.5 w-3.5" /> Mark Completed
+                  <CheckCheck className="size-3.5" /> Mark Completed
                 </Button>
               )}
             </TableCell>

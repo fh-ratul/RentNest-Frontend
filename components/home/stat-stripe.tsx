@@ -1,13 +1,19 @@
-type Stat = { label: string; value: string };
+import { CountUp } from "@/components/motion/count-up";
+import { Reveal } from "@/components/motion/reveal";
+
+type Stat = { label: string; value: number; prefix?: string; suffix?: string; hint?: string };
 
 export default function StatStrip({ stats }: { stats: Stat[] }) {
   return (
-    <div className="grid rounded-2xl border bg-card shadow-sm sm:grid-cols-3 sm:divide-x">
-      {stats.map((s) => (
-        <div key={s.label} className="border-b p-5 text-center last:border-b-0 sm:border-b-0 sm:p-6">
-          <p className="text-2xl font-bold tracking-tight sm:text-3xl">{s.value}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
-        </div>
+    <div className="grid sm:grid-cols-3 sm:divide-x">
+      {stats.map((s, i) => (
+        <Reveal key={s.label} delay={i * 90} className="px-6 py-8 text-center sm:py-4">
+          <p className="font-heading text-5xl font-normal tracking-tight text-primary sm:text-6xl">
+            <CountUp value={s.value} prefix={s.prefix} suffix={s.suffix} />
+          </p>
+          <p className="mt-3 text-sm font-semibold">{s.label}</p>
+          {s.hint && <p className="mt-0.5 text-sm text-muted-foreground">{s.hint}</p>}
+        </Reveal>
       ))}
     </div>
   );

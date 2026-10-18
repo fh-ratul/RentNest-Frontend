@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,14 +33,15 @@ export default function RequestRentalForm({ propertyId }: { propertyId: string }
     <form action={action} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="moveInDate">Move-in date</Label>
-        <Input id="moveInDate" name="moveInDate" type="date" required />
+        <Input id="moveInDate" name="moveInDate" type="date" required className="h-10" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="message">Message to landlord (optional)</Label>
         <Textarea id="message" name="message" rows={3} placeholder="Tell the landlord a bit about yourself..." />
       </div>
-      <Button type="submit" disabled={pending} className="w-full">
-        {pending ? "Submitting..." : "Request to Rent"}
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
+        {pending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+        {pending ? "Submitting..." : "Request to rent"}
       </Button>
     </form>
   );

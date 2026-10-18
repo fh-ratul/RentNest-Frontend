@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/dashboard/page-header";
 import PropertyListCard from "@/components/dashboard/landlord/property-list-card";
 import { getMyProperties } from "../_actions/propertyActions";
 import { IProperty } from "@/lib/types";
@@ -12,17 +13,17 @@ export default async function LandlordPropertiesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">My Properties</h1>
-          <p className="text-muted-foreground">{properties.length} listed</p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/landlord/properties/new">
-            <Plus className="mr-2 h-4 w-4" /> Add Property
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="My properties"
+        description={`${properties.length} listed`}
+        actions={
+          <Button asChild className="px-4">
+            <Link href="/dashboard/landlord/properties/new">
+              <Plus className="size-4" /> Add property
+            </Link>
+          </Button>
+        }
+      />
 
       {properties.length === 0 ? (
         <EmptyState
@@ -34,8 +35,14 @@ export default async function LandlordPropertiesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((property) => (
-            <PropertyListCard key={property.id} property={property} />
+          {properties.map((property, i) => (
+            <div
+              key={property.id}
+              style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
+              className="animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-700"
+            >
+              <PropertyListCard property={property} />
+            </div>
           ))}
         </div>
       )}

@@ -41,14 +41,17 @@ export default function ReviewForm({ rentalRequestId }: { rentalRequestId: strin
             <button
               key={star}
               type="button"
+              aria-label={`${star} star${star > 1 ? "s" : ""}`}
+              aria-pressed={rating === star}
+              className="rounded-lg p-0.5 outline-none transition-transform active:scale-90 focus-visible:ring-3 focus-visible:ring-ring/40"
               onClick={() => setRating(star)}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
             >
               <Star
                 className={cn(
-                  "h-7 w-7 transition-colors",
-                  (hovered || rating) >= star ? "fill-amber-400 text-amber-400" : "text-muted-foreground"
+                  "size-8 transition-all duration-200",
+                  (hovered || rating) >= star ? "scale-110 fill-warning text-warning" : "text-muted-foreground/40"
                 )}
               />
             </button>
@@ -59,7 +62,7 @@ export default function ReviewForm({ rentalRequestId }: { rentalRequestId: strin
         <Label htmlFor="comment">Comment (optional)</Label>
         <Textarea id="comment" name="comment" rows={4} placeholder="Share your experience..." />
       </div>
-      <Button type="submit" disabled={pending || rating === 0} className="w-full">
+      <Button type="submit" size="lg" disabled={pending || rating === 0} className="w-full">
         {pending ? "Submitting..." : "Submit Review"}
       </Button>
     </form>

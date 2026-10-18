@@ -1,24 +1,33 @@
 import { LucideIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Tone, TONES } from "@/lib/tones";
 
 type Props = {
   icon: LucideIcon;
   label: string;
   value: string | number;
-  colorClass?: string;
+  tone?: Tone;
+  hint?: string;
+  /** Position in a row of cards, used to stagger the entrance. */
+  index?: number;
 };
 
-export default function StatCard({ icon: Icon, label, value, colorClass = "text-primary bg-primary/10" }: Props) {
+export default function StatCard({ icon: Icon, label, value, tone = "brand", hint, index = 0 }: Props) {
   return (
-    <Card className="flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
-      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11", colorClass)}>
-        <Icon className="h-5 w-5" />
+    <div
+      style={{ animationDelay: `${index * 70}ms` }}
+      className="group relative min-w-0 overflow-hidden rounded-xl border bg-card p-4 shadow-soft transition-shadow duration-300 animate-in fade-in slide-in-from-bottom-3 fill-mode-both hover:shadow-lift sm:p-5"
+    >
+      <div className="relative flex items-start justify-between gap-3">
+        <p className="truncate text-xs font-medium text-muted-foreground sm:text-sm">{label}</p>
+        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg border", TONES[tone])}>
+          <Icon className="size-4" />
+        </span>
       </div>
-      <div className="min-w-0">
-        <p className="truncate text-xs text-muted-foreground sm:text-sm">{label}</p>
-        <p className="truncate text-xl font-semibold sm:text-2xl">{value}</p>
-      </div>
-    </Card>
+      <p className="relative mt-2 truncate font-heading text-3xl font-normal tracking-tight tabular-nums sm:text-4xl">
+        {value}
+      </p>
+      {hint && <p className="relative mt-1 truncate text-xs text-muted-foreground">{hint}</p>}
+    </div>
   );
 }

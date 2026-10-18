@@ -3,13 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ICategory } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 export default function PropertyFilters({ categories }: { categories: ICategory[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [city, setCity] = useState(searchParams.get("city") ?? "");
@@ -19,14 +21,17 @@ export default function PropertyFilters({ categories }: { categories: ICategory[
 
   const hasActiveFilters = city || minPrice || maxPrice || categoryId || search;
 
-  const applyFilters = () => {
+  const navigate = (href: string) => startTransition(() => router.push(href));
+
+  const applyFilters = (event?: React.FormEvent) => {
+    event?.preventDefault();
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (city) params.set("city", city);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (categoryId) params.set("categoryId", categoryId);
-    router.push(`/properties?${params.toString()}`);
+    navigate(`/properties?${params.toString()}`);
   };
 
   const clearFilters = () => {
@@ -35,60 +40,122 @@ export default function PropertyFilters({ categories }: { categories: ICategory[
     setMinPrice("");
     setMaxPrice("");
     setCategoryId("");
-    router.push("/properties");
+    navigate("/properties");
+  };
+
+  const pickCategory = (id: string) => {
+    setCategoryId(id);
+    const params = new URLSearchParams(searchParams.toString());
+    if (id) params.set("categoryId", id);
+    else params.delete("categoryId");
+    navigate(`/properties?${params.toString()}`);
   };
 
   return (
-    <div className="space-y-4 rounded-xl border bg-card p-4 shadow-sm sm:p-5">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-          placeholder="Search by title or address..."
-          className="pl-9"
-        />
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(8rem,1fr)_7rem_7rem_minmax(9rem,1fr)_auto] lg:items-end">
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">City</label>
-          <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Dhaka" />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Min $</label>
-          <Input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Max $</label>
-          <Input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Category</label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="h-9 w-full rounded-md border bg-background px-2 text-sm"
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
-          {hasActiveFilters && (
-            <Button variant="ghost" size="icon" onClick={clearFilters} title="Clear filters">
-              <X className="h-4 w-4" />
-            </Button>
+    <div className="space-y-4">
+      <form
+        onSubmit={applyFilters}
+        className="relative overflow-hidden rounded-xl border bg-background p-3 sm:p-4"
+      >
+        {/* Progress bar while the new results load */}
+        <span
+          aria-hidden
+          className={cn(
+            "absolute inset-x-0 top-0 h-0.5 origin-left bg-linear-to-r from-primary to-brass transition-transform duration-700 ease-(--ease-out-expo)",
+            isPending ? "scale-x-100 animate-pulse" : "scale-x-0"
           )}
-          <Button onClick={applyFilters} className="flex-1 lg:flex-none">
-            <SlidersHorizontal className="mr-2 h-4 w-4" /> Apply
-          </Button>
+        />
+        <div className="grid gap-3 lg:grid-cols-[minmax(14rem,1.6fr)_minmax(8rem,1fr)_7rem_7rem_auto] lg:items-end">
+          <Field label="Search">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Title or address…"
+                className="h-10 pl-10"
+              />
+            </div>
+          </Field>
+          <div className="grid grid-cols-3 gap-3 lg:contents">
+            <Field label="City">
+              <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Any city" className="h-10" />
+            </Field>
+            <Field label="Min $">
+              <Input type="number" min={0} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder="No min" className="h-10" />
+            </Field>
+            <Field label="Max $">
+              <Input type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="No max" className="h-10" />
+            </Field>
+          </div>
+
+          <div className="flex gap-2">
+            {hasActiveFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-lg"
+                onClick={clearFilters}
+                aria-label="Clear filters"
+                className="animate-in fade-in zoom-in-75 duration-300"
+              >
+                <X className="size-4" />
+              </Button>
+            )}
+            <Button type="submit" size="lg" disabled={isPending} className="h-10 flex-1 px-5 lg:flex-none">
+              <SlidersHorizontal className="size-4" /> {isPending ? "Searching…" : "Apply"}
+            </Button>
+          </div>
         </div>
-      </div>
+      </form>
+
+      {categories.length > 0 && (
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
+          <CategoryChip active={!categoryId} onClick={() => pickCategory("")}>
+            All homes
+          </CategoryChip>
+          {categories.map((c) => (
+            <CategoryChip key={c.id} active={categoryId === c.id} onClick={() => pickCategory(c.id)}>
+              {c.name}
+            </CategoryChip>
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block space-y-1.5">
+      <span className="pl-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function CategoryChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300",
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "bg-card text-muted-foreground hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground"
+      )}
+    >
+      {children}
+    </button>
   );
 }

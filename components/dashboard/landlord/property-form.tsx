@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
+import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,33 +41,33 @@ export default function PropertyForm({ categories, property }: Props) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="title">Title</Label>
-          <Input id="title" name="title" defaultValue={property?.title} />
-          {state?.fieldErrors?.title && <p className="text-xs text-red-500">{state.fieldErrors.title}</p>}
+          <Input id="title" name="title" className="h-10" defaultValue={property?.title} />
+          {state?.fieldErrors?.title && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.title}</p>}
         </div>
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="description">Description</Label>
           <Textarea id="description" name="description" rows={4} defaultValue={property?.description} />
           {state?.fieldErrors?.description && (
-            <p className="text-xs text-red-500">{state.fieldErrors.description}</p>
+            <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.description}</p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="address">Address</Label>
-          <Input id="address" name="address" defaultValue={property?.address} />
-          {state?.fieldErrors?.address && <p className="text-xs text-red-500">{state.fieldErrors.address}</p>}
+          <Input id="address" name="address" className="h-10" defaultValue={property?.address} />
+          {state?.fieldErrors?.address && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.address}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="city">City</Label>
-          <Input id="city" name="city" defaultValue={property?.city} />
-          {state?.fieldErrors?.city && <p className="text-xs text-red-500">{state.fieldErrors.city}</p>}
+          <Input id="city" name="city" className="h-10" defaultValue={property?.city} />
+          {state?.fieldErrors?.city && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.city}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="price">Price ($/mo)</Label>
-          <Input id="price" name="price" type="number" defaultValue={property?.price} />
-          {state?.fieldErrors?.price && <p className="text-xs text-red-500">{state.fieldErrors.price}</p>}
+          <Input id="price" name="price" className="h-10" type="number" defaultValue={property?.price} />
+          {state?.fieldErrors?.price && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.price}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="categoryId">Category</Label>
@@ -75,7 +76,7 @@ export default function PropertyForm({ categories, property }: Props) {
             name="categoryId"
             defaultValue={property?.categoryId ?? categories[0]?.id ?? ""}
             disabled={!categories.length}
-            className="h-9 w-full rounded-md border bg-background px-2 text-sm"
+            className="select-native h-10 w-full rounded-2xl border border-transparent bg-input/50 px-3 text-sm outline-none transition-[box-shadow,border-color] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:opacity-50"
           >
             {!categories.length && <option value="">No categories available</option>}
             {categories.map((c) => (
@@ -83,22 +84,22 @@ export default function PropertyForm({ categories, property }: Props) {
             ))}
           </select>
           {state?.fieldErrors?.categoryId && (
-            <p className="text-xs text-red-500">{state.fieldErrors.categoryId}</p>
+            <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.categoryId}</p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="bedrooms">Bedrooms</Label>
-          <Input id="bedrooms" name="bedrooms" type="number" defaultValue={property?.bedrooms} />
+          <Input id="bedrooms" name="bedrooms" className="h-10" type="number" defaultValue={property?.bedrooms} />
           {state?.fieldErrors?.bedrooms && (
-            <p className="text-xs text-red-500">{state.fieldErrors.bedrooms}</p>
+            <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.bedrooms}</p>
           )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="bathrooms">Bathrooms</Label>
-          <Input id="bathrooms" name="bathrooms" type="number" defaultValue={property?.bathrooms} />
+          <Input id="bathrooms" name="bathrooms" className="h-10" type="number" defaultValue={property?.bathrooms} />
           {state?.fieldErrors?.bathrooms && (
-            <p className="text-xs text-red-500">{state.fieldErrors.bathrooms}</p>
+            <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.bathrooms}</p>
           )}
         </div>
 
@@ -124,13 +125,16 @@ export default function PropertyForm({ categories, property }: Props) {
           <p className="text-xs text-muted-foreground">
             Must be full URLs starting with https:// — leave blank if you don&apos;t have any yet.
           </p>
-          {state?.fieldErrors?.images && <p className="text-xs text-red-500">{state.fieldErrors.images}</p>}
+          {state?.fieldErrors?.images && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.images}</p>}
         </div>
       </div>
 
-      <Button type="submit" disabled={pending} className="w-full sm:w-auto">
-        {pending ? "Saving..." : isEdit ? "Save Changes" : "Create Property"}
-      </Button>
+      <div className="flex justify-end border-t pt-5">
+        <Button type="submit" size="lg" disabled={pending} className="w-full px-6 sm:w-auto">
+          {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+          {pending ? "Saving..." : isEdit ? "Save changes" : "Create property"}
+        </Button>
+      </div>
     </form>
   );
 }

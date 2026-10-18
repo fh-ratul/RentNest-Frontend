@@ -22,9 +22,9 @@ export default function UpdateProfileForm({ currentName }: { currentName: string
     <form action={action} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="name">Full name</Label>
-        <Input id="name" name="name" defaultValue={currentName} required minLength={2} />
+        <Input id="name" name="name" className="h-10" defaultValue={currentName} required minLength={2} />
       </div>
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="px-5">
         {pending ? "Saving..." : "Save changes"}
       </Button>
     </form>

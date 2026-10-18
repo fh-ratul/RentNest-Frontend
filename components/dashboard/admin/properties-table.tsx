@@ -2,18 +2,13 @@
 
 import { IAdminProperty } from "@/lib/types";
 import PropertyImage from "@/components/shared/property-image";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/shared/status-badge";
+import { PROPERTY_STATUS_TONE } from "@/lib/tones";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TablePagination } from "@/components/shared/table-pagination";
 import { useClientTable } from "@/hooks/use-client-table";
 import { Search } from "lucide-react";
-
-const STATUS_STYLES: Record<string, string> = {
-  AVAILABLE: "bg-green-100 text-green-800 hover:bg-green-100",
-  RENTED: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-  INACTIVE: "bg-gray-100 text-gray-800 hover:bg-gray-100",
-};
 
 export default function AdminPropertiesTable({ properties }: { properties: IAdminProperty[] }) {
   const { search, setSearch, page, setPage, totalPages, paged } = useClientTable(
@@ -23,10 +18,10 @@ export default function AdminPropertiesTable({ properties }: { properties: IAdmi
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 border-b p-4">
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title, city, landlord..." className="pl-9" />
+      <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:w-72">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title, city, landlord..." className="h-10 pl-10" />
         </div>
         <p className="text-sm text-muted-foreground">{properties.length} total properties</p>
       </div>
@@ -58,7 +53,7 @@ export default function AdminPropertiesTable({ properties }: { properties: IAdmi
               </TableCell>
               <TableCell>{p.city}</TableCell>
               <TableCell>${p.price}</TableCell>
-              <TableCell><Badge className={STATUS_STYLES[p.status]}>{p.status}</Badge></TableCell>
+              <TableCell><StatusBadge status={p.status} tone={PROPERTY_STATUS_TONE[p.status]} /></TableCell>
             </TableRow>
           ))}
           {paged.length === 0 && (

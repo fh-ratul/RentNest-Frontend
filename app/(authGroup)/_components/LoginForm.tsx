@@ -33,9 +33,9 @@ const LoginForm = () => {
             name="email"
             type="email"
             placeholder="you@example.com"
-            className={cn(state?.fieldErrors?.email && "border-red-500 focus-visible:ring-red-500")}
+            className={cn("h-11", state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/30")}
           />
-          {state?.fieldErrors?.email && <p className="text-xs text-red-500">{state.fieldErrors.email}</p>}
+          {state?.fieldErrors?.email && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.email}</p>}
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
@@ -44,11 +44,11 @@ const LoginForm = () => {
             name="password"
             type="password"
             placeholder="••••••••"
-            className={cn(state?.fieldErrors?.password && "border-red-500 focus-visible:ring-red-500")}
+            className={cn("h-11", state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/30")}
           />
-          {state?.fieldErrors?.password && <p className="text-xs text-red-500">{state.fieldErrors.password}</p>}
+          {state?.fieldErrors?.password && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.password}</p>}
         </div>
-        <Button type="submit" disabled={pending} className="w-full">
+        <Button type="submit" size="lg" disabled={pending} className="w-full">
           {pending ? "Logging in..." : "Log in"}
         </Button>
       </form>

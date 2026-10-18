@@ -17,12 +17,12 @@ export default function RentalRequestsPanel({ rentals }: { rentals: IRentalReque
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-        <TabsList>
+        <TabsList className="h-auto! max-w-full flex-wrap justify-start gap-1 rounded-2xl bg-muted/70 p-1">
           {TABS.map((tab) => (
-            <TabsTrigger key={tab} value={tab}>
+            <TabsTrigger key={tab} value={tab} className="h-8 flex-none rounded-xl px-3">
               {tab === "ALL" ? "All" : tab.charAt(0) + tab.slice(1).toLowerCase()}
-              <span className="ml-1.5 text-xs text-muted-foreground">
-                ({tab === "ALL" ? rentals.length : rentals.filter((r) => r.status === tab).length})
+              <span className="rounded-full bg-foreground/5 px-1.5 text-[11px] tabular-nums text-muted-foreground">
+                {tab === "ALL" ? rentals.length : rentals.filter((r) => r.status === tab).length}
               </span>
             </TabsTrigger>
           ))}
@@ -33,8 +33,14 @@ export default function RentalRequestsPanel({ rentals }: { rentals: IRentalReque
         <EmptyState icon={ClipboardList} title="Nothing here" description="No requests match this filter." />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {filtered.map((rental) => (
-            <RentalRequestCard key={rental.id} rental={rental} />
+          {filtered.map((rental, i) => (
+            <div
+              key={`${activeTab}-${rental.id}`}
+              style={{ animationDelay: `${Math.min(i, 6) * 50}ms` }}
+              className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500"
+            >
+              <RentalRequestCard rental={rental} />
+            </div>
           ))}
         </div>
       )}

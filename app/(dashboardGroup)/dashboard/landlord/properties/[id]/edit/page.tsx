@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader, Panel } from "@/components/dashboard/page-header";
 import PropertyForm from "@/components/dashboard/landlord/property-form";
 import { getCategories } from "@/app/properties/_actions/propertyActions";
 import { getPropertyByIdForEdit } from "../../_actions/../../_actions/propertyActions";
@@ -23,16 +23,11 @@ export default async function EditPropertyPage({
   const categories: ICategory[] = categoriesResult.success ? categoriesResult.data : [];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Edit Property</h1>
-        <p className="text-muted-foreground">{property.title}</p>
-      </div>
-      <Card>
-        <CardContent className="p-6">
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader title="Edit property" description={property.title} />
+      <Panel className="p-5 sm:p-8">
           <PropertyForm categories={categories} property={property} />
-        </CardContent>
-      </Card>
+      </Panel>
     </div>
   );
 }

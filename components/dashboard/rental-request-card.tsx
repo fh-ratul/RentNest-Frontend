@@ -1,29 +1,27 @@
 import Link from "next/link";
 import { IRentalRequest } from "@/lib/types";
 import PropertyImage from "@/components/shared/property-image";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatusBadge from "@/components/shared/status-badge";
 import { MapPin, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const STATUS_ACCENT: Record<string, string> = {
-  PENDING: "border-t-amber-400",
-  APPROVED: "border-t-blue-400",
-  REJECTED: "border-t-red-400",
-  ACTIVE: "border-t-green-400",
-  COMPLETED: "border-t-gray-400",
-};
+import { RENTAL_STATUS_TONE, TONE_DOT } from "@/lib/tones";
 
 export default function RentalRequestCard({ rental }: { rental: IRentalRequest }) {
   const { property, status, payment, review } = rental;
 
   return (
-    <Card className={cn("overflow-hidden border-t-4 py-0 transition-shadow hover:shadow-md", STATUS_ACCENT[status])}>
-      <div className="relative h-40 w-full bg-muted">
-        <PropertyImage src={property.images?.[0]} alt={property.title} />
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-soft transition-all duration-500 ease-(--ease-out-expo) hover:-translate-y-0.5 hover:shadow-lift sm:flex-row">
+      <span aria-hidden className={cn("absolute inset-x-0 top-0 z-10 h-1 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-1", TONE_DOT[RENTAL_STATUS_TONE[status] ?? "neutral"])} />
+      <div className="relative h-40 w-full shrink-0 overflow-hidden bg-muted sm:h-auto sm:w-40">
+        <PropertyImage
+          src={property.images?.[0]}
+          alt={property.title}
+          sizes="160px"
+          className="transition-transform duration-700 ease-(--ease-out-expo) group-hover:scale-105"
+        />
       </div>
-      <CardContent className="space-y-3 p-4">
+      <div className="flex flex-1 flex-col space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold leading-tight">{property.title}</h3>
           <StatusBadge status={status} />
@@ -40,7 +38,7 @@ export default function RentalRequestCard({ rental }: { rental: IRentalRequest }
           </p>
         </div>
 
-        <div className="flex items-center gap-2 pt-1">
+        <div className="mt-auto flex items-center gap-2 pt-1">
           {status === "APPROVED" && !payment && (
             <Button asChild size="sm" className="flex-1">
               <Link href={`/dashboard/tenant/requests/${rental.id}/pay`}>Pay Now</Link>
@@ -52,10 +50,10 @@ export default function RentalRequestCard({ rental }: { rental: IRentalRequest }
             </Button>
           )}
           {status === "PENDING" && (
-            <p className="text-xs text-muted-foreground">Waiting for landlord approval...</p>
+            <p className="flex items-center gap-2 text-xs text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-warning" /> Waiting for landlord approval…</p>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }

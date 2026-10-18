@@ -27,13 +27,13 @@ export default function ChangePasswordForm() {
     <form ref={formRef} action={action} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="oldPassword">Current password</Label>
-        <Input id="oldPassword" name="oldPassword" type="password" required />
+        <Input id="oldPassword" name="oldPassword" className="h-10" type="password" required />
       </div>
       <div className="space-y-2">
         <Label htmlFor="newPassword">New password</Label>
-        <Input id="newPassword" name="newPassword" type="password" required minLength={6} />
+        <Input id="newPassword" name="newPassword" className="h-10" type="password" required minLength={6} />
       </div>
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="px-5">
         {pending ? "Updating..." : "Change password"}
       </Button>
     </form>

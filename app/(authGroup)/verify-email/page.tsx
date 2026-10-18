@@ -1,4 +1,8 @@
+import { MailCheck } from "lucide-react";
+import AuthCard from "../_components/AuthCard";
 import VerifyEmailForm from "../_components/VerifyEmailForm";
+
+export const metadata = { title: "Verify your email" };
 
 export default async function VerifyEmailPage({
   searchParams,
@@ -8,20 +12,24 @@ export default async function VerifyEmailPage({
   const { email = "" } = await searchParams;
 
   return (
-    <div className="w-full max-w-md space-y-6 rounded-lg border p-8 shadow-lg">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">Verify Your Email</h1>
-        <p className="text-gray-500">
+    <AuthCard
+      title="Verify your email"
+      description={
+        <>
+          <span className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <MailCheck className="size-6" />
+          </span>
           {email ? (
             <>
-              We sent a 6 digit code to <span className="font-medium text-gray-900">{email}</span>
+              We sent a 6 digit code to <span className="font-semibold text-foreground">{email}</span>
             </>
           ) : (
             "Enter your email and the 6 digit code we sent you"
           )}
-        </p>
-      </div>
+        </>
+      }
+    >
       <VerifyEmailForm email={email} />
-    </div>
+    </AuthCard>
   );
 }

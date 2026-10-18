@@ -21,12 +21,12 @@ export default function LogoutButton() {
   return (
     <Button
       variant="ghost"
-      className="w-full justify-start text-muted-foreground hover:text-red-600"
+      className="h-10 w-full justify-start gap-3 rounded-xl px-3 font-medium text-sidebar-foreground/70 hover:bg-destructive/10 hover:text-destructive"
       onClick={handleLogout}
       disabled={isPending}
     >
-      <LogOut className="mr-2 h-4 w-4" />
-      {isPending ? "Logging out..." : "Logout"}
+      <LogOut className="size-4" />
+      {isPending ? "Logging out..." : "Log out"}
     </Button>
   );
 }

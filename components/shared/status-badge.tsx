@@ -1,14 +1,28 @@
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { RENTAL_STATUS_TONE, Tone, TONE_DOT, TONES } from "@/lib/tones";
 
-const STATUS_STYLES: Record<string, string> = {
-  PENDING: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  APPROVED: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-  REJECTED: "bg-red-100 text-red-800 hover:bg-red-100",
-  ACTIVE: "bg-green-100 text-green-800 hover:bg-green-100",
-  COMPLETED: "bg-gray-100 text-gray-800 hover:bg-gray-100",
+type Props = {
+  status: string;
+  /** Overrides the tone looked up from the rental status map. */
+  tone?: Tone;
+  label?: string;
+  className?: string;
 };
 
-export default function StatusBadge({ status }: { status: string }) {
-  return <Badge className={cn("font-medium", STATUS_STYLES[status])}>{status}</Badge>;
+export default function StatusBadge({ status, tone, label, className }: Props) {
+  const resolved = tone ?? RENTAL_STATUS_TONE[status] ?? "neutral";
+  const text = label ?? status.charAt(0) + status.slice(1).toLowerCase();
+
+  return (
+    <span
+      className={cn(
+        "inline-flex h-6 w-fit shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold whitespace-nowrap",
+        TONES[resolved],
+        className
+      )}
+    >
+      <span className={cn("size-1.5 rounded-full", TONE_DOT[resolved])} />
+      {text}
+    </span>
+  );
 }
