@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Bath, Bed, MapPin, Pencil, Trash2 } from "lucide-react";
 import { deletePropertyAction } from "@/app/(dashboardGroup)/dashboard/landlord/_actions/propertyActions";
+import { formatBDT } from "@/lib/utils";
 
 export default function PropertyListCard({ property }: { property: IProperty }) {
   const [isPending, startTransition] = useTransition();
@@ -53,7 +54,7 @@ export default function PropertyListCard({ property }: { property: IProperty }) 
           className="absolute right-3 top-3 border-white/20 bg-white/90 backdrop-blur-md dark:bg-black/60"
         />
         <p className="absolute bottom-3 left-3 rounded-xl bg-black/55 px-2.5 py-1 font-heading text-sm font-medium text-white backdrop-blur-md">
-          ${Number(property.price).toLocaleString("en-US")}
+          {formatBDT(property.price)}
           <span className="font-sans text-xs font-normal text-white/75"> /mo</span>
         </p>
       </div>

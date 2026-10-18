@@ -1,6 +1,7 @@
 import PropertyCard from "@/components/property/property-card";
 import PropertyFilters from "@/components/property/property-filters";
 import EmptyState from "@/components/shared/empty-state";
+import ListingPagination from "@/components/property/listing-pagination";
 import { getCategories, getProperties } from "./_actions/propertyActions";
 import { IProperty, ICategory } from "@/lib/types";
 import { SearchX } from "lucide-react";
@@ -21,6 +22,10 @@ export default async function PropertiesPage({
 
   const properties: IProperty[] = propertiesResult.success ? propertiesResult.data : [];
   const categories: ICategory[] = categoriesResult.success ? categoriesResult.data : [];
+  // The API returns one page; its meta has the count across all pages.
+  const total: number = propertiesResult.success ? propertiesResult.meta?.total ?? properties.length : 0;
+  const page = Math.max(1, Number(params.page) || 1);
+  const totalPages = Math.ceil(total / (propertiesResult.meta?.limit || total || 1));
   const location = params.city || params.search;
 
   return (
@@ -43,8 +48,8 @@ export default async function PropertiesPage({
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{properties.length}</span>{" "}
-              {properties.length === 1 ? "home" : "homes"} available
+              <span className="font-semibold text-foreground">{total}</span>{" "}
+              {total === 1 ? "home" : "homes"} available
             </p>
           </div>
 
@@ -74,6 +79,7 @@ export default async function PropertiesPage({
             ))}
           </div>
         )}
+        <ListingPagination page={page} totalPages={totalPages} searchParams={params} />
       </section>
     </div>
   );

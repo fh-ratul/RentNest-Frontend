@@ -6,6 +6,7 @@ import { getMyProperties } from "./_actions/propertyActions";
 import { getLandlordRequests } from "./_actions/requestActions";
 import { IProperty, ILandlordRentalRequest } from "@/lib/types";
 import { ArrowRight, BellRing, Building2, Clock, Home, Plus, Wallet } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 
 export default async function LandlordOverviewPage() {
   const [propertiesResult, requestsResult] = await Promise.all([
@@ -44,7 +45,7 @@ export default async function LandlordOverviewPage() {
           index={3}
           icon={Wallet}
           label="Total earnings"
-          value={`$${earnings.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatBDT(earnings, { decimals: true })}
           tone="info"
         />
       </div>

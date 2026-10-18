@@ -68,7 +68,7 @@ export default function PropertyForm({ categories, property }: Props) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="price">Price ($/mo)</Label>
+          <Label htmlFor="price">Rent (৳ / month)</Label>
           <Input id="price" name="price" className="h-10" type="number" defaultValue={property?.price} />
           {state?.fieldErrors?.price && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.price}</p>}
         </div>

@@ -5,6 +5,7 @@ import { PAYMENT_STATUS_TONE } from "@/lib/tones";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import EmptyState from "@/components/shared/empty-state";
 import { Receipt } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 
 export default function PaymentHistoryTable({ payments }: { payments: IPayment[] }) {
   if (!payments.length) {
@@ -32,7 +33,7 @@ export default function PaymentHistoryTable({ payments }: { payments: IPayment[]
           {payments.map((p) => (
             <TableRow key={p.id}>
               <TableCell className="font-medium">{p.rentalRequest?.property.title ?? "-"}</TableCell>
-              <TableCell className="font-semibold tabular-nums">${Number(p.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</TableCell>
+              <TableCell className="font-semibold tabular-nums">{formatBDT(p.amount, { decimals: true })}</TableCell>
               <TableCell>
                 <StatusBadge status={p.status} tone={PAYMENT_STATUS_TONE[p.status]} />
               </TableCell>

@@ -10,6 +10,7 @@ import { IPayment, IRentalRequest } from "@/lib/types";
 import { Clock, CheckCircle2, Home, Wallet, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { formatBDT } from "@/lib/utils";
 
 export default async function TenantDashboardPage() {
   const [meResult, rentalsResult, paymentsResult] = await Promise.all([
@@ -51,7 +52,7 @@ export default async function TenantDashboardPage() {
           index={3}
           icon={Wallet}
           label="Total paid"
-          value={`$${totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatBDT(totalPaid, { decimals: true })}
           tone="info"
         />
       </div>

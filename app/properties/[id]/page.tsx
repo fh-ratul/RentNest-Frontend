@@ -11,6 +11,7 @@ import { PROPERTY_STATUS_TONE } from "@/lib/tones";
 import { ArrowLeft, Bath, Bed, Building2, Check, Lock, MapPin, ShieldCheck, Star } from "lucide-react";
 import { IPropertyDetail } from "@/lib/types";
 import { getPropertyById } from "../_actions/propertyDetailActions";
+import { formatBDT } from "@/lib/utils";
 
 export default async function PropertyDetailPage({
   params,
@@ -28,7 +29,7 @@ export default async function PropertyDetailPage({
   const isTenant = user.success && user.data.role === "TENANT";
   const isAvailable = property.status === "AVAILABLE";
   const gallery = property.images?.slice(1, 5) ?? [];
-  const price = Number(property.price).toLocaleString("en-US");
+  const price = formatBDT(property.price);
   const reviews = property.reviews ?? [];
   const avgRating = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
 
@@ -168,7 +169,7 @@ export default async function PropertyDetailPage({
             <div className="border-b bg-linear-to-br from-accent/70 to-transparent p-6">
               <p className="text-sm text-muted-foreground">Monthly rent</p>
               <p className="mt-1 font-heading text-4xl font-medium tracking-tight">
-                ${price}
+                {price}
                 <span className="font-sans text-base font-normal text-muted-foreground"> / month</span>
               </p>
             </div>

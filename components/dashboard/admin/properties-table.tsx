@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TablePagination } from "@/components/shared/table-pagination";
 import { useClientTable } from "@/hooks/use-client-table";
 import { Search } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 
 export default function AdminPropertiesTable({ properties }: { properties: IAdminProperty[] }) {
   const { search, setSearch, page, setPage, totalPages, paged } = useClientTable(
@@ -52,7 +53,7 @@ export default function AdminPropertiesTable({ properties }: { properties: IAdmi
                 <p className="text-xs text-muted-foreground">{p.landlord.email}</p>
               </TableCell>
               <TableCell>{p.city}</TableCell>
-              <TableCell>${p.price}</TableCell>
+              <TableCell className="tabular-nums">{formatBDT(p.price)}</TableCell>
               <TableCell><StatusBadge status={p.status} tone={PROPERTY_STATUS_TONE[p.status]} /></TableCell>
             </TableRow>
           ))}

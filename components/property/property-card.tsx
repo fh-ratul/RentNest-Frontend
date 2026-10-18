@@ -3,9 +3,10 @@ import { ViewTransition } from "react";
 import { IProperty } from "@/lib/types";
 import PropertyImage from "@/components/shared/property-image";
 import { ArrowUpRight } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 
 export default function PropertyCard({ property, priority }: { property: IProperty; priority?: boolean }) {
-  const price = Number(property.price).toLocaleString("en-US");
+  const price = formatBDT(property.price);
 
   return (
     <Link
@@ -50,7 +51,7 @@ export default function PropertyCard({ property, priority }: { property: IProper
               {property.bathrooms} {property.bathrooms === 1 ? "bath" : "baths"}
             </p>
             <p className="whitespace-nowrap">
-              <span className="font-semibold tabular-nums">${price}</span>
+              <span className="font-semibold tabular-nums">{price}</span>
               <span className="text-muted-foreground"> / month</span>
             </p>
           </div>

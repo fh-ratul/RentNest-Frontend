@@ -5,6 +5,7 @@ import PayButton from "@/components/dashboard/pay-button";
 import PropertyImage from "@/components/shared/property-image";
 import EmptyState from "@/components/shared/empty-state";
 import { PageHeader, Panel } from "@/components/dashboard/page-header";
+import { formatBDT } from "@/lib/utils";
 
 export default async function PayPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,7 +27,7 @@ export default async function PayPage({ params }: { params: Promise<{ id: string
     );
   }
 
-  const price = Number(rental.property.price).toLocaleString("en-US", { minimumFractionDigits: 2 });
+  const price = formatBDT(rental.property.price, { decimals: true });
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -52,7 +53,7 @@ export default async function PayPage({ params }: { params: Promise<{ id: string
             </div>
             <div className="flex items-center justify-between border-t pt-3">
               <dt className="text-muted-foreground">Amount due</dt>
-              <dd className="font-heading text-3xl font-medium tracking-tight">${price}</dd>
+              <dd className="font-heading text-3xl font-medium tracking-tight">{price}</dd>
             </div>
           </dl>
           <PayButton rentalRequestId={rental.id} />

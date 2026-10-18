@@ -48,6 +48,7 @@ export default function PropertyFilters({ categories }: { categories: ICategory[
     const params = new URLSearchParams(searchParams.toString());
     if (id) params.set("categoryId", id);
     else params.delete("categoryId");
+    params.delete("page");
     navigate(`/properties?${params.toString()}`);
   };
 
@@ -81,10 +82,10 @@ export default function PropertyFilters({ categories }: { categories: ICategory[
             <Field label="City">
               <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Any city" className="h-10" />
             </Field>
-            <Field label="Min $">
+            <Field label="Min ৳">
               <Input type="number" min={0} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder="No min" className="h-10" />
             </Field>
-            <Field label="Max $">
+            <Field label="Max ৳">
               <Input type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="No max" className="h-10" />
             </Field>
           </div>
