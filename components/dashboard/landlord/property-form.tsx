@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ICategory, IProperty } from "@/lib/types";
+import PhotoUploader from "./photo-uploader";
 import {
   ActionState,
   createPropertyAction,
@@ -29,6 +30,8 @@ export default function PropertyForm({ categories, property }: Props) {
     : createPropertyAction;
 
   const [state, action, pending] = useActionState(boundAction, initialState);
+  // Saving mid-upload would drop the photos that haven't finished yet.
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
   useEffect(() => {
     if (state && !state.success && !state.fieldErrors) {
@@ -114,25 +117,16 @@ export default function PropertyForm({ categories, property }: Props) {
         </div>
 
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="images">Image URLs (one per line, optional)</Label>
-          <Textarea
-            id="images"
-            name="images"
-            rows={3}
-            placeholder={"https://images.unsplash.com/photo-...\nhttps://images.unsplash.com/photo-..."}
-            defaultValue={property?.images?.join("\n")}
-          />
-          <p className="text-xs text-muted-foreground">
-            Must be full URLs starting with https:// — leave blank if you don&apos;t have any yet.
-          </p>
+          <Label>Photos</Label>
+          <PhotoUploader initialImages={property?.images} onUploadingChange={setUploadingPhotos} />
           {state?.fieldErrors?.images && <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">{state.fieldErrors.images}</p>}
         </div>
       </div>
 
       <div className="flex justify-end border-t pt-5">
-        <Button type="submit" size="lg" disabled={pending} className="w-full px-6 sm:w-auto">
-          {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-          {pending ? "Saving..." : isEdit ? "Save changes" : "Create property"}
+        <Button type="submit" size="lg" disabled={pending || uploadingPhotos} className="w-full px-6 sm:w-auto">
+          {pending || uploadingPhotos ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+          {pending ? "Saving..." : uploadingPhotos ? "Uploading photos..." : isEdit ? "Save changes" : "Create property"}
         </Button>
       </div>
     </form>

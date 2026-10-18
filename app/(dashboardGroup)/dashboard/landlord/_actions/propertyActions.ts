@@ -132,6 +132,39 @@ export async function deletePropertyAction(propertyId: string) {
   return result;
 }
 
+// One photo per call. The browser resizes it first, so it stays under the
+// server action body limit in next.config.ts and Vercel's 4.5 MB request cap.
+export async function uploadPropertyImageAction(
+  formData: FormData
+): Promise<{ success: boolean; message: string; url?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  if (!accessToken) return { success: false, message: "Not logged in" };
+
+  const image = formData.get("image");
+  if (!(image instanceof File) || image.size === 0) {
+    return { success: false, message: "Please choose an image" };
+  }
+
+  const body = new FormData();
+  body.append("image", image);
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties/images`, {
+    method: "POST",
+    headers: { Cookie: `accessToken=${accessToken}` },
+    body,
+  });
+
+  // A rejected upload can come back as plain text (e.g. a proxy's 413), not JSON.
+  const result = await res.json().catch(() => null);
+
+  if (!result?.success) {
+    return { success: false, message: result?.message || "The photo could not be uploaded" };
+  }
+
+  return { success: true, message: result.message, url: result.data.url };
+}
+
 export const getPropertyByIdForEdit = async (id: string) => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/properties/${id}`, {
     cache: "no-store",
