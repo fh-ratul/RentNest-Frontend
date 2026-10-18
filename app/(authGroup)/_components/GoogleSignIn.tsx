@@ -125,8 +125,15 @@ const GoogleSignIn = ({ role, text = "continue_with" }: GoogleSignInProps) => {
             <Loader2 className="size-4 animate-spin" /> Signing in with Google...
           </p>
         )}
-        {/* Google draws its own button into this element. */}
-        <div ref={buttonRef} className={isPending ? "hidden" : "flex w-full justify-center"} />
+        {/* Google draws its own button into this element, inside a light-scheme iframe.
+            In dark mode the page's color-scheme would differ from the iframe's, and the
+            browser then paints an opaque white box behind it; matching the scheme here
+            keeps the iframe transparent. */}
+        <div
+          ref={buttonRef}
+          style={{ colorScheme: "light" }}
+          className={isPending ? "hidden" : "flex w-full justify-center"}
+        />
       </div>
       {role && (
         <p className="text-center text-xs text-muted-foreground">
