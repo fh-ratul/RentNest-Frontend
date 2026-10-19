@@ -113,3 +113,14 @@ export type IAdminRentalRequest = {
   tenant: { id: string; name: string; email: string };
   payment: IPayment | null;
 };
+
+// What "Draft with AI" fills into the property form.
+export interface IListingDraft {
+  title: string;
+  description: string;
+  amenities: string[];
+  categoryId: string;
+  photoWarnings: string[];
+  // false when the AI fell back to writing from the typed details only.
+  usedPhotos: boolean;
+}

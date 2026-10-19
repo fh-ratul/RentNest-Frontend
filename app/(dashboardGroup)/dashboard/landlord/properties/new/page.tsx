@@ -3,6 +3,9 @@ import PropertyForm from "@/components/dashboard/landlord/property-form";
 import { getCategories } from "@/app/properties/_actions/propertyActions";
 import { ICategory } from "@/lib/types";
 
+// "Draft with AI" runs as a server action from this page and can take ~20s.
+export const maxDuration = 60;
+
 export default async function NewPropertyPage() {
   const categoriesResult = await getCategories();
   const categories: ICategory[] = categoriesResult.success ? categoriesResult.data : [];

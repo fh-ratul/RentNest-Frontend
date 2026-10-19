@@ -5,6 +5,7 @@ import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { validateFormData } from "@/lib/validate-form-data";
 import { propertyFormSchema } from "@/lib/validations/property.validation";
+import { IListingDraft } from "@/lib/types";
 
 export type ActionState = {
   success: boolean;
@@ -163,6 +164,35 @@ export async function uploadPropertyImageAction(
   }
 
   return { success: true, message: result.message, url: result.data.url };
+}
+
+// Asks the backend's AI to draft the listing text from the photos and the
+// details typed so far. Takes ~5-20s, so the pages using it allow 60s.
+export async function draftListingAction(input: {
+  imageUrls: string[];
+  city?: string;
+  address?: string;
+  price?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+}): Promise<{ success: boolean; message: string; data?: IListingDraft }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  if (!accessToken) return { success: false, message: "Not logged in" };
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/ai/listing-draft`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    body: JSON.stringify(input),
+  });
+
+  const result = await res.json().catch(() => null);
+
+  if (!result?.success) {
+    return { success: false, message: result?.message || "The AI draft failed. Please try again." };
+  }
+
+  return { success: true, message: result.message, data: result.data };
 }
 
 export const getPropertyByIdForEdit = async (id: string) => {

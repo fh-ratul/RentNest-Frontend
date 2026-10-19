@@ -5,6 +5,9 @@ import { getCategories } from "@/app/properties/_actions/propertyActions";
 import { getPropertyByIdForEdit } from "../../_actions/../../_actions/propertyActions";
 import { ICategory, IProperty } from "@/lib/types";
 
+// "Draft with AI" runs as a server action from this page and can take ~20s.
+export const maxDuration = 60;
+
 export default async function EditPropertyPage({
   params,
 }: {

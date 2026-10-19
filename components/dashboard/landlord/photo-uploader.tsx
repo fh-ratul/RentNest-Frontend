@@ -48,9 +48,11 @@ async function resizeImage(file: File): Promise<Blob> {
 type Props = {
   initialImages?: string[];
   onUploadingChange?: (uploading: boolean) => void;
+  // The uploaded (or pasted) photo URLs, in order, whenever they change.
+  onPhotosChange?: (urls: string[]) => void;
 };
 
-export default function PhotoUploader({ initialImages = [], onUploadingChange }: Props) {
+export default function PhotoUploader({ initialImages = [], onUploadingChange, onPhotosChange }: Props) {
   const [photos, setPhotos] = useState<Photo[]>(() =>
     initialImages.map((url) => ({ id: url, preview: url, url, status: "done" }))
   );
@@ -65,6 +67,12 @@ export default function PhotoUploader({ initialImages = [], onUploadingChange }:
   useEffect(() => {
     onUploadingChange?.(uploading);
   }, [uploading, onUploadingChange]);
+
+  // A string key, so the parent is only told when the list actually changes.
+  const uploadedKey = uploadedUrls.join("\n");
+  useEffect(() => {
+    onPhotosChange?.(uploadedKey ? uploadedKey.split("\n") : []);
+  }, [uploadedKey, onPhotosChange]);
 
   // Free the local previews when the form goes away.
   useEffect(() => {
