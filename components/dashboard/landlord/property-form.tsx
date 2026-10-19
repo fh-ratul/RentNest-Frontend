@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ICategory, IListingDraft, IProperty } from "@/lib/types";
 import PhotoUploader from "./photo-uploader";
+import LocationPicker from "./location-picker";
 import {
   ActionState,
   createPropertyAction,
@@ -121,6 +122,25 @@ export default function PropertyForm({ categories, property }: Props) {
           <Label htmlFor="city">City</Label>
           <Input id="city" name="city" className="h-10" defaultValue={property?.city} />
           <FieldError message={state?.fieldErrors?.city} />
+        </div>
+
+        <div className="space-y-2 sm:col-span-2">
+          <Label>Location on map</Label>
+          <LocationPicker
+            initial={
+              property?.latitude != null && property?.longitude != null
+                ? { lat: property.latitude, lng: property.longitude }
+                : null
+            }
+            getAddress={() => {
+              const form = new FormData(formRef.current!);
+              return {
+                address: String(form.get("address") ?? "").trim(),
+                city: String(form.get("city") ?? "").trim(),
+              };
+            }}
+          />
+          <FieldError message={state?.fieldErrors?.latitude} />
         </div>
 
         <div className="grid gap-4 sm:col-span-2 sm:grid-cols-3">

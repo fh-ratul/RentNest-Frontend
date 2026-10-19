@@ -13,6 +13,16 @@ export type ActionState = {
   fieldErrors?: Record<string, string>;
 } | null;
 
+const mapPin = (formData: FormData) => {
+  const rawLat = formData.get("latitude");
+  const rawLng = formData.get("longitude");
+  const lat = Number(rawLat);
+  const lng = Number(rawLng);
+  const hasPin = typeof rawLat === "string" && rawLat !== "" && typeof rawLng === "string" && rawLng !== "" &&
+    Number.isFinite(lat) && Number.isFinite(lng);
+  return { latitude: hasPin ? lat : null, longitude: hasPin ? lng : null };
+};
+
 const buildPropertyPayload = (formData: FormData) => {
   const parsed = validateFormData(propertyFormSchema, formData);
   if (!parsed.success) return { valid: false as const, ...parsed };
@@ -31,6 +41,8 @@ const buildPropertyPayload = (formData: FormData) => {
     categoryId: parsed.data.categoryId,
     amenities: amenitiesRaw ? amenitiesRaw.split(",").map((a) => a.trim()).filter(Boolean) : [],
     images: imagesRaw ? imagesRaw.split("\n").map((u) => u.trim()).filter(Boolean) : [],
+    // The map pin, or null when there is none (which also clears a removed pin).
+    ...mapPin(formData),
   };
 
   return { valid: true as const, payload };

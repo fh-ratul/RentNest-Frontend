@@ -12,6 +12,9 @@ import { ArrowLeft, Bath, Bed, Building2, Check, Lock, MapPin, ShieldCheck, Star
 import { IPropertyDetail } from "@/lib/types";
 import { getPropertyById } from "../_actions/propertyDetailActions";
 import { formatBDT } from "@/lib/utils";
+import { MapView } from "@/components/map";
+import NeighbourhoodPlaces from "@/components/property/neighbourhood-places";
+import { CommuteWidget } from "@/components/property/commute";
 
 export default async function PropertyDetailPage({
   params,
@@ -32,6 +35,7 @@ export default async function PropertyDetailPage({
   const price = formatBDT(property.price);
   const reviews = property.reviews ?? [];
   const avgRating = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
+  const hasPin = property.latitude != null && property.longitude != null;
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 animate-page-in sm:px-6 sm:py-10">
@@ -121,6 +125,31 @@ export default async function PropertyDetailPage({
                   </li>
                 ))}
               </ul>
+            </Section>
+          )}
+
+          {hasPin && (
+            <Section title="Neighbourhood">
+              <div className="h-64 sm:h-72">
+                <MapView
+                  center={[property.latitude!, property.longitude!]}
+                  marker={[property.latitude!, property.longitude!]}
+                  zoom={15}
+                  readOnly
+                />
+              </div>
+              {property.neighbourhoodSummary && (
+                <p className="leading-relaxed text-muted-foreground">{property.neighbourhoodSummary}</p>
+              )}
+              {property.neighbourhood ? (
+                <NeighbourhoodPlaces neighbourhood={property.neighbourhood} />
+              ) : (
+                <Notice>We&apos;re gathering the schools, shops and other places near this home. Check back in a minute.</Notice>
+              )}
+              <CommuteWidget propertyId={property.id} />
+              <p className="text-xs text-muted-foreground">
+                Nearby places and travel times use OpenStreetMap data, which can be incomplete.
+              </p>
             </Section>
           )}
 

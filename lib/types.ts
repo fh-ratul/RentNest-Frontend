@@ -20,6 +20,23 @@ export type IProperty = {
   landlordId: string;
   createdAt: string;
   updatedAt: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  neighbourhood?: INeighbourhood | null;
+  neighbourhoodSummary?: string | null;
+};
+
+// Places within walking distance of a listing's pin, from OpenStreetMap.
+export type INeighbourhood = {
+  radiusM: number;
+  source: string;
+  categories: {
+    key: string;
+    label: string;
+    count: number;
+    more: boolean; // the search hit its limit, so there are probably more
+    nearest: { name: string; distanceM: number } | null;
+  }[];
 };
 
 export type IPayment = {
