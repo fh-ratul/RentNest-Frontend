@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export type ActionState = { success: boolean; message: string } | null;
 
@@ -18,7 +19,7 @@ export async function updateProfileAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/updateMe`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify({ name: formData.get("name") }),
   });
 
@@ -44,7 +45,7 @@ export async function changePasswordAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/change-password`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify({
       oldPassword: formData.get("oldPassword"),
       newPassword: formData.get("newPassword"),

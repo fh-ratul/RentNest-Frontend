@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export const getMyRentals = async () => {
   const cookieStore = await cookies();
@@ -11,7 +12,7 @@ export const getMyRentals = async () => {
   }
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/rentals`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     cache: "force-cache",
     next: { revalidate: 60, tags: ["my-rentals","max"] },
   });
@@ -26,7 +27,7 @@ export const getRentalById = async (id: string) => {
   if (!accessToken) return { success: false, message: "Not logged in" };
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/rentals/${id}`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     cache: "no-store",
   });
 

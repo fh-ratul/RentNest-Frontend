@@ -1,5 +1,7 @@
 "use server";
 
+import { clientIpHeaders } from "@/utils/backendHeaders";
+
 export type TPlace = { lat: number; lng: number; label: string; approximate?: boolean };
 export type TRoute = { minutes: number; km: number } | null;
 
@@ -11,7 +13,10 @@ export const searchPlaceAction = async (
   const params = new URLSearchParams({ q });
   if (city) params.set("city", city);
 
-  const res = await fetch(`${process.env.BACKEND_API_URL}/api/geo/search?${params}`, { cache: "no-store" });
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/geo/search?${params}`, {
+    headers: await clientIpHeaders(),
+    cache: "no-store",
+  });
   const result = await res.json().catch(() => null);
 
   if (!result?.success) return { success: false, message: result?.message || "Couldn't search the map right now" };
@@ -26,6 +31,7 @@ export const getCommuteAction = async (
 ): Promise<{ success: boolean; message: string; data?: { car: TRoute; foot: TRoute } }> => {
   const params = new URLSearchParams({ lat: String(lat), lng: String(lng) });
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/properties/${propertyId}/commute?${params}`, {
+    headers: await clientIpHeaders(),
     cache: "no-store",
   });
   const result = await res.json().catch(() => null);

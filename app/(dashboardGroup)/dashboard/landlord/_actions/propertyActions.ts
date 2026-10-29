@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { validateFormData } from "@/lib/validate-form-data";
 import { propertyFormSchema } from "@/lib/validations/property.validation";
 import { IListingDraft } from "@/lib/types";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export type ActionState = {
   success: boolean;
@@ -55,7 +56,7 @@ export const getMyProperties = async () => {
   if (!accessToken) return { success: false, message: "Not logged in" };
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     next: { revalidate: 60, tags: ["my-properties"] },
   });
 
@@ -77,7 +78,7 @@ export async function createPropertyAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify(built.payload),
   });
 
@@ -108,7 +109,7 @@ export async function updatePropertyAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties/${propertyId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify(built.payload),
   });
 
@@ -132,7 +133,7 @@ export async function deletePropertyAction(propertyId: string) {
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties/${propertyId}`, {
     method: "DELETE",
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
   });
 
   const result = await res.json();
@@ -164,7 +165,7 @@ export async function uploadPropertyImageAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/properties/images`, {
     method: "POST",
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body,
   });
 
@@ -194,7 +195,7 @@ export async function draftListingAction(input: {
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/ai/listing-draft`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify(input),
   });
 
@@ -209,6 +210,7 @@ export async function draftListingAction(input: {
 
 export const getPropertyByIdForEdit = async (id: string) => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/properties/${id}`, {
+    headers: await clientIpHeaders(),
     cache: "no-store",
   });
   return res.json();

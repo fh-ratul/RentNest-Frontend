@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export type ActionState = { success: boolean; message: string } | null;
 
@@ -25,7 +26,7 @@ export async function createRentalRequestAction(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/rentals`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify(payload),
   });
 

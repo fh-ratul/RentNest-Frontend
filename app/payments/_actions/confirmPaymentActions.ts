@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export const confirmPayment = async (sessionId: string) => {
   const cookieStore = await cookies();
@@ -11,7 +12,7 @@ export const confirmPayment = async (sessionId: string) => {
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/payments/confirm`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify({ sessionId }),
   });
 

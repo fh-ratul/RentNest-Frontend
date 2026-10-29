@@ -10,6 +10,7 @@ import {
   verifyEmailFormSchema,
 } from "@/lib/validations/auth.validation";
 import { DEMO_ROLES, DemoRole, getDemoCredentials } from "@/lib/demo-accounts";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export type ActionState = {
   success: boolean;
@@ -72,7 +73,7 @@ const loginWithCredentials = async (
 ): Promise<ActionState> => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await clientIpHeaders()) },
     body: JSON.stringify(credentials),
   });
 
@@ -114,7 +115,7 @@ export const googleLoginAction = async (
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/google`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await clientIpHeaders()) },
     body: JSON.stringify({ idToken, role }),
   });
 
@@ -139,7 +140,7 @@ export const registerAction = async (
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await clientIpHeaders()) },
     body: JSON.stringify(parsed.data),
   });
 
@@ -163,7 +164,7 @@ export const verifyEmailAction = async (
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/verify-email`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await clientIpHeaders()) },
     body: JSON.stringify(parsed.data),
   });
 
@@ -181,7 +182,7 @@ export const verifyEmailAction = async (
 export const resendOtpAction = async (email: string): Promise<ActionState> => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/resend-otp`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await clientIpHeaders()) },
     body: JSON.stringify({ email }),
   });
 

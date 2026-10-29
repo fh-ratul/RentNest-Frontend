@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export const getMyPayments = async () => {
   const cookieStore = await cookies();
@@ -11,7 +12,7 @@ export const getMyPayments = async () => {
   }
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/payments`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     cache: "force-cache",
     next: { revalidate: 60, tags: ["my-payments","max"] },
   });
@@ -27,7 +28,7 @@ export async function createPaymentAction(rentalRequestId: string) {
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/payments/create`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify({ rentalRequestId }),
   });
 

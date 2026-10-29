@@ -2,6 +2,7 @@
 
 import { jwtUtils } from "@/utils/jwt";
 import { cookies } from "next/headers";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export const getNewAccessToken = async () => {
   const cookieStore = await cookies();
@@ -15,6 +16,7 @@ export const getNewAccessToken = async () => {
     method: "POST",
     headers: {
       Cookie: `refreshToken=${refreshToken}`,
+      ...(await clientIpHeaders()),
     },
     cache: "no-cache",
   });

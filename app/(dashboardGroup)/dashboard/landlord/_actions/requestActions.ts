@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { clientIpHeaders } from "@/utils/backendHeaders";
 
 export const getLandlordRequests = async () => {
   const cookieStore = await cookies();
@@ -10,7 +11,7 @@ export const getLandlordRequests = async () => {
   if (!accessToken) return { success: false, message: "Not logged in" };
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/requests`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers: { Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     next: { revalidate: 30, tags: ["landlord-requests"] },
   });
 
@@ -28,7 +29,7 @@ export async function updateRequestStatus(
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/landlord/requests/${requestId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}` },
+    headers: { "Content-Type": "application/json", Cookie: `accessToken=${accessToken}`, ...(await clientIpHeaders()) },
     body: JSON.stringify({ status }),
   });
 

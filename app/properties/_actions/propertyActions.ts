@@ -1,5 +1,7 @@
 "use server";
 
+import { clientIpHeaders } from "@/utils/backendHeaders";
+
 // Fills a 3-column grid evenly. (A "use server" file can only export async functions.)
 const PROPERTIES_PER_PAGE = 12;
 
@@ -12,7 +14,7 @@ export const getProperties = async (searchParams: Record<string, string | undefi
 
   const res = await fetch(
     `${process.env.BACKEND_API_URL}/api/properties?${params.toString()}`,
-    { next: { revalidate: 60, tags: ["properties"] } }
+    { headers: await clientIpHeaders(), next: { revalidate: 60, tags: ["properties"] } }
   );
 
   return res.json();
@@ -20,6 +22,7 @@ export const getProperties = async (searchParams: Record<string, string | undefi
 
 export const getCategories = async () => {
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/categories`, {
+    headers: await clientIpHeaders(),
     next: { revalidate: 60 * 60, tags: ["categories"] },
   });
 
